@@ -1,5 +1,6 @@
 use std::f32::EPSILON;
 
+#[derive(Debug)]
 pub struct Tuple {
     x: f32,
     y: f32,
@@ -35,15 +36,8 @@ impl Tuple {
         self.w == 0.0
     }
 
-    pub fn eq(&self, other: &Tuple) -> bool {
-        (self.x - other.x).abs() < f32::EPSILON
-            && (self.y - other.y).abs() < f32::EPSILON
-            && (self.z - other.z).abs() < f32::EPSILON
-            && (self.w - other.w).abs() < f32::EPSILON
-    }
-
     pub fn add(&self, other: &Tuple) -> Tuple {
-        if self.w == 1.0 && other.w == 0.0 {
+        if self.w == 1.0 && other.w == 1.0 {
             panic!("Cannot add two points!");
         }
         Tuple {
@@ -61,6 +55,15 @@ impl Tuple {
             z: self.z - other.z,
             w: self.w - other.w
         }
+    }
+}
+
+impl PartialEq for Tuple {
+    fn eq(&self, other: &Self) -> bool {
+        (self.x - other.x).abs() < f32::EPSILON
+            && (self.y - other.y).abs() < f32::EPSILON
+            && (self.z - other.z).abs() < f32::EPSILON
+            && (self.w - other.w).abs() < f32::EPSILON
     }
 }
 
@@ -98,4 +101,26 @@ mod tests {
         assert!(b.eq(&a));
         assert!(!b.eq(&c));
     }
+
+    #[test]
+    fn test_add() {
+        let a = Tuple::new(3.0,-2.0, 5.0,1.0);
+        let b = Tuple::new(-2.0,3.0, 1.0,0.0);
+        let expected = Tuple::new(1.0, 1.0, 6.0, 1.0);
+        assert_eq!(a.add(&b), expected);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_add_points() {
+        let a = Tuple::new(3.0,-2.0, 5.0,1.0);
+        let b = Tuple::new(-2.0,3.0, 1.0,1.0);
+        let result = a.add(&b);
+    }
+
+    #[test]
+    fn test_sub() {
+    }
+
+
 }
