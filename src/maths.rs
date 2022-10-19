@@ -35,6 +35,33 @@ impl Tuple {
         self.w == 0.0
     }
 
+    pub fn eq(&self, other: &Tuple) -> bool {
+        (self.x - other.x).abs() < f32::EPSILON
+            && (self.y - other.y).abs() < f32::EPSILON
+            && (self.z - other.z).abs() < f32::EPSILON
+            && (self.w - other.w).abs() < f32::EPSILON
+    }
+
+    pub fn add(&self, other: &Tuple) -> Tuple {
+        if self.w == 1.0 && other.w == 0.0 {
+            panic!("Cannot add two points!");
+        }
+        Tuple {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+            w: self.w + other.w
+        }
+    }
+
+    pub fn sub(&self, other: &Tuple) -> Tuple {
+        Tuple {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
+            w: self.w - other.w
+        }
+    }
 }
 
 #[cfg(test)]
@@ -60,5 +87,15 @@ mod tests {
         assert_eq!(a.z, 3.1);
         assert!(!a.is_point());
         assert!(a.is_vector());
+    }
+
+    #[test]
+    fn test_equals() {
+        let a = Tuple::new(4.3, -4.2, 3.1, 0.0 );
+        let b = Tuple::new(4.3, -4.2, 3.1, 0.0 );
+        let c = Tuple::new(4.3, -4.2, 3.1, 1.0 );
+        assert!(a.eq(&b));
+        assert!(b.eq(&a));
+        assert!(!b.eq(&c));
     }
 }
