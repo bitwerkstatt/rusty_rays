@@ -19,6 +19,24 @@ impl Tuple {
         }
     }
 
+    pub fn new_point(x: f32, y:f32, z:f32) -> Tuple {
+        Self {
+            x,
+            y,
+            z,
+            w: 1.0
+        }
+    }
+
+    pub fn new_vector(x: f32, y:f32, z:f32) -> Tuple {
+        Self {
+            x,
+            y,
+            z,
+            w: 0.0
+        }
+    }
+
     pub fn zero() -> Tuple {
         Tuple {
             x: 0.0,
@@ -90,6 +108,18 @@ mod tests {
         assert_eq!(a.z, 3.1);
         assert!(!a.is_point());
         assert!(a.is_vector());
+    }
+
+    #[test]
+    pub fn test_new_point() {
+        let point = Tuple::new_point(4.3, -4.2, 3.1);
+        assert_eq!(point.w, 1.0);
+    }
+
+    #[test]
+    pub fn test_new_vector() {
+        let point = Tuple::new_vector(4.3, -4.2, 3.1);
+        assert_eq!(point.w, 0.0);
     }
 
     #[test]
