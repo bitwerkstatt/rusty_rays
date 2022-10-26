@@ -1,5 +1,3 @@
-use std::f32::EPSILON;
-
 #[derive(Debug)]
 pub struct Tuple {
     x: f32,
@@ -67,6 +65,9 @@ impl Tuple {
     }
 
     pub fn sub(&self, other: &Tuple) -> Tuple {
+        if self.w == 0.0 && other.w == 1.0 {
+            panic!("Cannot subtract a point from a vector!");
+        }
         Tuple {
             x: self.x - other.x,
             y: self.y - other.y,
@@ -143,14 +144,40 @@ mod tests {
     #[test]
     #[should_panic]
     fn test_add_points() {
-        let a = Tuple::new(3.0,-2.0, 5.0,1.0);
-        let b = Tuple::new(-2.0,3.0, 1.0,1.0);
+        let a = Tuple::new_point(3.0,-2.0, 5.0);
+        let b = Tuple::new_point(-2.0,3.0, 1.0);
         let result = a.add(&b);
     }
 
     #[test]
-    fn test_sub() {
+    fn test_subtract_two_points() {
+        let p1 = Tuple::new_point(3.0,2.0,1.0);
+        let p2 = Tuple::new_point(5.0,6.0,7.0);
+        let expected = Tuple::new_vector(-2.0, -4.0, -6.0);
+        assert_eq!(p1.sub(&p2), expected);
     }
 
+    #[test]
+    fn test_subtract_two_vectors() {
+        let p1 = Tuple::new_vector(3.0,2.0,1.0);
+        let p2 = Tuple::new_vector(5.0,6.0,7.0);
+        let expected = Tuple::new_vector(-2.0, -4.0, -6.0);
+        assert_eq!(p1.sub(&p2), expected);
+    }
 
+    #[test]
+    fn test_subtract_vector_from_point() {
+        let p1 = Tuple::new_point(3.0,2.0,1.0);
+        let p2 = Tuple::new_vector(5.0,6.0,7.0);
+        let expected = Tuple::new_point(-2.0, -4.0, -6.0);
+        assert_eq!(p1.sub(&p2), expected);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_point_from_vector() {
+        let a = Tuple::new_vector(3.0,-2.0, 5.0);
+        let b = Tuple::new_point(-2.0,3.0, 1.0);
+        let result = a.sub(&b);
+    }
 }
