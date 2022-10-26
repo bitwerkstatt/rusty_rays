@@ -35,13 +35,12 @@ impl Tuple {
         }
     }
 
-    pub fn zero() -> Tuple {
-        Tuple {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-            w: 1.0
-        }
+    pub fn origin() -> Tuple {
+        Tuple::new_point(0.0,0.0,0.0)
+    }
+
+    pub fn zero_vector() -> Tuple {
+        Tuple::new_vector(0.0,0.0,0.0)
     }
 
     pub fn is_point(&self) -> bool {
@@ -74,6 +73,10 @@ impl Tuple {
             z: self.z - other.z,
             w: self.w - other.w
         }
+    }
+
+    pub fn negate(&self) -> Tuple {
+        Tuple::new(-self.x, -self.y, -self.z, -self.w)
     }
 }
 
@@ -179,5 +182,12 @@ mod tests {
         let a = Tuple::new_vector(3.0,-2.0, 5.0);
         let b = Tuple::new_point(-2.0,3.0, 1.0);
         let result = a.sub(&b);
+    }
+
+    #[test]
+    fn test_negate() {
+        let a = Tuple::new(1.0, -2.0, 3.0, -4.0);
+        let expected = Tuple::new(-1.0, 2.0, -3.0, 4.0);
+        assert_eq!(a.negate(), expected);
     }
 }
