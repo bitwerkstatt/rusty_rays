@@ -1,3 +1,7 @@
+use std::ops::Add;
+use std::ops::Sub;
+use std::ops::Neg;
+
 #[derive(Debug)]
 pub struct Tuple {
     x: f32,
@@ -51,32 +55,37 @@ impl Tuple {
         self.w == 0.0
     }
 
-    pub fn add(&self, other: &Tuple) -> Tuple {
-        if self.w == 1.0 && other.w == 1.0 {
+}
+
+impl Add for Tuple {
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        if self.w == 1.0 && rhs.w == 1.0 {
             panic!("Cannot add two points!");
         }
         Tuple {
-            x: self.x + other.x,
-            y: self.y + other.y,
-            z: self.z + other.z,
-            w: self.w + other.w
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+            z: self.z + rhs.z,
+            w: self.w + rhs.w
         }
     }
+}
 
-    pub fn sub(&self, other: &Tuple) -> Tuple {
-        if self.w == 0.0 && other.w == 1.0 {
+impl Sub for Tuple {
+    type Output = Self;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        if self.w == 0.0 && rhs.w == 1.0 {
             panic!("Cannot subtract a point from a vector!");
         }
         Tuple {
-            x: self.x - other.x,
-            y: self.y - other.y,
-            z: self.z - other.z,
-            w: self.w - other.w
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+            z: self.z - rhs.z,
+            w: self.w - rhs.w
         }
-    }
-
-    pub fn negate(&self) -> Tuple {
-        Tuple::new(-self.x, -self.y, -self.z, -self.w)
     }
 }
 
@@ -89,10 +98,18 @@ impl PartialEq for Tuple {
     }
 }
 
+impl Neg for Tuple {
+    type Output = Self;
+
+    fn neg(self) -> Self::Output {
+        Tuple::new(-self.x, -self.y, -self.z, -self.w)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::maths::Tuple;
+    use crate::tuple::Tuple;
 
     #[test]
     fn test_point() {
@@ -131,9 +148,9 @@ mod tests {
         let a = Tuple::new(4.3, -4.2, 3.1, 0.0 );
         let b = Tuple::new(4.3, -4.2, 3.1, 0.0 );
         let c = Tuple::new(4.3, -4.2, 3.1, 1.0 );
-        assert!(a.eq(&b));
-        assert!(b.eq(&a));
-        assert!(!b.eq(&c));
+        assert_eq!(a, b);
+        assert_eq!(b, a);
+        assert_ne!(a, c);
     }
 
     #[test]
@@ -141,7 +158,7 @@ mod tests {
         let a = Tuple::new(3.0,-2.0, 5.0,1.0);
         let b = Tuple::new(-2.0,3.0, 1.0,0.0);
         let expected = Tuple::new(1.0, 1.0, 6.0, 1.0);
-        assert_eq!(a.add(&b), expected);
+        assert_eq!(a + b, expected);
     }
 
     #[test]
@@ -149,7 +166,7 @@ mod tests {
     fn test_add_points() {
         let a = Tuple::new_point(3.0,-2.0, 5.0);
         let b = Tuple::new_point(-2.0,3.0, 1.0);
-        let result = a.add(&b);
+        let result = a + b;
     }
 
     #[test]
@@ -157,7 +174,7 @@ mod tests {
         let p1 = Tuple::new_point(3.0,2.0,1.0);
         let p2 = Tuple::new_point(5.0,6.0,7.0);
         let expected = Tuple::new_vector(-2.0, -4.0, -6.0);
-        assert_eq!(p1.sub(&p2), expected);
+        assert_eq!(p1 - p2, expected);
     }
 
     #[test]
@@ -165,7 +182,7 @@ mod tests {
         let p1 = Tuple::new_vector(3.0,2.0,1.0);
         let p2 = Tuple::new_vector(5.0,6.0,7.0);
         let expected = Tuple::new_vector(-2.0, -4.0, -6.0);
-        assert_eq!(p1.sub(&p2), expected);
+        assert_eq!(p1 - p2, expected);
     }
 
     #[test]
@@ -173,7 +190,7 @@ mod tests {
         let p1 = Tuple::new_point(3.0,2.0,1.0);
         let p2 = Tuple::new_vector(5.0,6.0,7.0);
         let expected = Tuple::new_point(-2.0, -4.0, -6.0);
-        assert_eq!(p1.sub(&p2), expected);
+        assert_eq!(p1 - p2, expected);
     }
 
     #[test]
@@ -181,13 +198,13 @@ mod tests {
     fn test_point_from_vector() {
         let a = Tuple::new_vector(3.0,-2.0, 5.0);
         let b = Tuple::new_point(-2.0,3.0, 1.0);
-        let result = a.sub(&b);
+        let result = a - b;
     }
 
     #[test]
     fn test_negate() {
         let a = Tuple::new(1.0, -2.0, 3.0, -4.0);
         let expected = Tuple::new(-1.0, 2.0, -3.0, 4.0);
-        assert_eq!(a.negate(), expected);
+        assert_eq!(-a, expected);
     }
 }
